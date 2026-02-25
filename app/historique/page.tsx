@@ -1,9 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabase"
 
 interface Pronostic {
-  id: number
+  id: string
   match: string
   competition: string
   prediction: string
@@ -18,24 +19,23 @@ export default function Historique() {
   const [matchs, setMatchs] = useState<Pronostic[]>([])
 
   useEffect(() => {
-    const stored: Pronostic[] = JSON.parse(
-      localStorage.getItem("historique") || "[]"
-    )
-
-    // Tri du plus récent au plus ancien
-    const sorted = stored.sort((a, b) => {
-      const dateA = new Date(`${a.date}T${a.heure}`)
-      const dateB = new Date(`${b.date}T${b.heure}`)
-      return dateB.getTime() - dateA.getTime()
-    })
-
-    setMatchs(sorted)
+    loadHistorique()
   }, [])
+
+  const loadHistorique = async () => {
+    const { data } = await supabase
+      .from("matches")
+      .select("*")
+      .in("status", ["Gagné", "Perdu"])
+      .order("date", { ascending: false })
+
+    if (data) setMatchs(data)
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 p-10">
       <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 text-center mb-12 flex items-center justify-center gap-3">
-      📊 Historique des pronostics
+        📊 Historique des pronostics
       </h1>
 
       <div className="max-w-4xl mx-auto space-y-6">
@@ -55,12 +55,10 @@ export default function Historique() {
             }`}
           >
             <div>
-              {/* Date */}
               <p className="text-sm text-gray-500">
                 {item.date} • 🕒 {item.heure}
               </p>
 
-              {/* Match + Badge VIP */}
               <div className="flex items-center gap-3">
                 <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-wide">
                   {item.match}
@@ -73,12 +71,10 @@ export default function Historique() {
                 )}
               </div>
 
-              {/* Compétition */}
               <p className="text-sm text-gray-500 mt-1">
                 {item.competition}
               </p>
 
-              {/* Prédiction */}
               <p className="text-gray-600 mt-1">
                 🎯 {item.prediction}
               </p>
