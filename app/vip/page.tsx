@@ -39,8 +39,9 @@ export default function VIP() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-50 p-10 text-gray-900">
-      <h1 className="text-4xl font-extrabold mb-10">
+    <main className="min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-50 px-4 py-6 sm:px-6 md:px-8 text-gray-900">
+      
+      <h1 className="text-2xl sm:text-3xl font-extrabold mb-6">
         👑 Pronostics VIP 💎
       </h1>
 
@@ -54,31 +55,42 @@ export default function VIP() {
         </p>
       )}
 
-      <div className="space-y-8">
+      <div className="space-y-5">
         {matchsVIP.map((match) => (
           <div
             key={match.id}
-            className="bg-white p-6 rounded-2xl shadow-lg border-2 border-yellow-400"
+            className="bg-white p-5 rounded-3xl shadow-md border-2 border-yellow-400 transition-all duration-300 active:scale-[0.98]"
           >
-            <span className="inline-block bg-black text-yellow-400 text-xs font-bold px-3 py-1 rounded-full mb-3">
-              {match.competition}
-            </span>
+            {/* Header Card */}
+            <div className="flex justify-between items-center mb-3">
+              <span className="bg-black text-yellow-400 text-xs font-bold px-3 py-1 rounded-full">
+                {match.competition}
+              </span>
 
-            <h2 className="text-2xl font-bold">
+              <span className="text-xs text-gray-600">
+                📅 {match.date}
+              </span>
+            </div>
+
+            {/* Match */}
+            <h2 className="text-lg sm:text-xl font-bold leading-snug">
               {match.match}
             </h2>
 
-            <p className="text-gray-500 mt-1">
-              📅 {match.date} • 🕒 {match.heure}
+            <p className="text-gray-500 text-sm mt-1">
+              🕒 {match.heure}
             </p>
 
-            <p className="text-blue-600 font-semibold mt-4">
-              🎯 {match.prediction}
-            </p>
+            {/* Bloc Premium Prediction */}
+            <div className="mt-4 p-3 bg-yellow-50 rounded-xl border border-yellow-200">
+              <p className="text-blue-600 font-semibold text-sm">
+                🎯 {match.prediction}
+              </p>
 
-             <p className="text-green-600 font-bold mt-2">
-              💰 Cote {match.cote}
-             </p>
+              <p className="text-green-600 font-bold mt-1 text-sm">
+                💰 Cote {match.cote}
+              </p>
+            </div>
           </div>
         ))}
       </div>
