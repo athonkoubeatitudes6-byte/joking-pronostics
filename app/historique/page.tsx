@@ -33,14 +33,14 @@ export default function Historique() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-10">
-      <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 text-center mb-12 flex items-center justify-center gap-3">
+    <main className="min-h-screen">
+      <h1 className="text-3xl md:text-4xl font-extrabold text-center mb-8">
         📊 Historique des pronostics
       </h1>
 
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="space-y-5">
         {matchs.length === 0 && (
-          <p className="text-center text-gray-500">
+          <p className="text-center text-gray-400">
             Aucun match terminé pour le moment.
           </p>
         )}
@@ -48,48 +48,51 @@ export default function Historique() {
         {matchs.map((item) => (
           <div
             key={item.id}
-            className={`p-6 rounded-xl shadow-md flex flex-col md:flex-row justify-between items-center transition duration-300 hover:scale-[1.02] ${
+            className={`rounded-2xl p-5 backdrop-blur-md shadow-lg border transition-all duration-300 hover:scale-[1.02] ${
               item.type === "VIP"
-                ? "bg-yellow-50 border-2 border-yellow-400"
-                : "bg-white"
+                ? "bg-yellow-500/10 border-yellow-400"
+                : "bg-white/5 border-white/10"
             }`}
           >
-            <div>
-              <p className="text-sm text-gray-500">
-                {item.date} • 🕒 {item.heure}
-              </p>
+            {/* Date */}
+            <p className="text-xs text-gray-400 mb-2">
+              {item.date} • 🕒 {item.heure}
+            </p>
 
-              <div className="flex items-center gap-3">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-wide">
-                  {item.match}
-                </h2>
+            {/* Match */}
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <h2 className="text-lg md:text-xl font-bold">
+                {item.match}
+              </h2>
 
-                {item.type === "VIP" && (
-                  <span className="bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full">
-                    👑 VIP
-                  </span>
-                )}
-              </div>
-
-              <p className="text-sm text-gray-500 mt-1">
-                {item.competition}
-              </p>
-
-              <p className="text-gray-600 mt-1">
-                🎯 {item.prediction}
-              </p>
+              {item.type === "VIP" && (
+                <span className="bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full">
+                  👑 VIP
+                </span>
+              )}
             </div>
 
-            <div className="text-center mt-4 md:mt-0">
-              <p className="font-bold text-blue-600">
+            {/* Competition */}
+            <p className="text-sm text-gray-400 mt-1">
+              {item.competition}
+            </p>
+
+            {/* Prediction */}
+            <p className="mt-2 text-sm">
+              🎯 {item.prediction}
+            </p>
+
+            {/* Bottom Section */}
+            <div className="flex justify-between items-center mt-4">
+              <p className="font-bold text-blue-400">
                 Cote {item.cote}
               </p>
 
               <p
-                className={`font-semibold mt-1 ${
+                className={`font-semibold ${
                   item.status === "Gagné"
-                    ? "text-green-600"
-                    : "text-red-600"
+                    ? "text-green-400"
+                    : "text-red-400"
                 }`}
               >
                 {item.status === "Gagné"
