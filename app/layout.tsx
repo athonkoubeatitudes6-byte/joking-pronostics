@@ -7,11 +7,18 @@ export const metadata: Metadata = {
   title: "JOKING | Pronostics Football Premium",
   description:
     "Pronostics football gratuits et VIP avec statistiques et historique",
+  applicationName: "JOKING",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "JOKING",
+  },
 }
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#0f172a",
 }
 
 export default function RootLayout({
@@ -23,7 +30,7 @@ export default function RootLayout({
     <html lang="fr" suppressHydrationWarning>
       <body className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white antialiased overflow-x-hidden">
         
-        {/* Navbar Desktop */}
+        {/* Navbar Desktop uniquement */}
         <div className="hidden md:block">
           <Navbar />
         </div>
@@ -37,22 +44,34 @@ export default function RootLayout({
         <div className="md:hidden fixed bottom-0 left-0 w-full bg-gray-950 border-t border-gray-800 shadow-lg">
           <div className="flex justify-around items-center py-3 text-xs">
             
-            <Link href="/" className="flex flex-col items-center text-gray-400 hover:text-white transition">
+            <Link
+              href="/"
+              className="flex flex-col items-center text-gray-400 hover:text-white transition"
+            >
               <span className="text-lg">🏠</span>
               Accueil
             </Link>
 
-            <Link href="/pronostics" className="flex flex-col items-center text-gray-400 hover:text-white transition">
+            <Link
+              href="/pronostics"
+              className="flex flex-col items-center text-gray-400 hover:text-white transition"
+            >
               <span className="text-lg">⚽</span>
               Gratuit
             </Link>
 
-            <Link href="/vip" className="flex flex-col items-center text-gray-400 hover:text-white transition">
+            <Link
+              href="/vip"
+              className="flex flex-col items-center text-gray-400 hover:text-white transition"
+            >
               <span className="text-lg">👑</span>
               VIP
             </Link>
 
-            <Link href="/historique" className="flex flex-col items-center text-gray-400 hover:text-white transition">
+            <Link
+              href="/historique"
+              className="flex flex-col items-center text-gray-400 hover:text-white transition"
+            >
               <span className="text-lg">📊</span>
               Historique
             </Link>
