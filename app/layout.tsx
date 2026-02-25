@@ -1,3 +1,4 @@
+import InstallButton from "./components/InstallButton"
 import "./globals.css"
 import Navbar from "./navbar"
 import type { Metadata, Viewport } from "next"
@@ -78,7 +79,7 @@ export default function RootLayout({
 
           </div>
         </div>
-
+        <InstallButton />
       </body>
     </html>
   )
