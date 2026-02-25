@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabase"
 import Link from "next/link"
 
 interface Pronostic {
-  id: number
+  id: string
   match: string
   competition: string
   prediction: string
@@ -22,60 +23,33 @@ export default function Dashboard() {
     loadPronostics()
   }, [])
 
-  const loadPronostics = () => {
-    const stored: Pronostic[] = JSON.parse(
-      localStorage.getItem("pronostics") || "[]"
-    )
+  const loadPronostics = async () => {
+    const { data } = await supabase
+      .from("matches")
+      .select("*")
+      .order("date", { ascending: false })
 
-    const sorted = stored.sort((a, b) => {
-      const dateA = new Date(`${a.date}T${a.heure}`)
-      const dateB = new Date(`${b.date}T${b.heure}`)
-      return dateB.getTime() - dateA.getTime()
-    })
-
-    setPronostics(sorted)
+    if (data) setPronostics(data)
   }
 
-  // ✅ ENVOIE VERS HISTORIQUE
-  const updateStatus = (id: number, newStatus: string) => {
-    const stored: Pronostic[] = JSON.parse(
-      localStorage.getItem("pronostics") || "[]"
-    )
+  // ✅ METTRE GAGNÉ / PERDU
+  const updateStatus = async (id: string, newStatus: string) => {
+    await supabase
+      .from("matches")
+      .update({ status: newStatus })
+      .eq("id", id)
 
-    const historique: Pronostic[] = JSON.parse(
-      localStorage.getItem("historique") || "[]"
-    )
-
-    const match = stored.find((p) => p.id === id)
-
-    if (!match) return
-
-    const updatedMatch: Pronostic = {
-      ...match,
-      status: newStatus,
-    }
-
-    // Ajouter dans historique
-    localStorage.setItem(
-      "historique",
-      JSON.stringify([...historique, updatedMatch])
-    )
-
-    // Supprimer des pronostics actifs
-    const updatedPronostics = stored.filter((p) => p.id !== id)
-
-    localStorage.setItem(
-      "pronostics",
-      JSON.stringify(updatedPronostics)
-    )
-
-    setPronostics(updatedPronostics)
+    loadPronostics()
   }
 
-  const deletePronostic = (id: number) => {
-    const filtered = pronostics.filter((p) => p.id !== id)
-    localStorage.setItem("pronostics", JSON.stringify(filtered))
-    setPronostics(filtered)
+  // ✅ SUPPRIMER
+  const deletePronostic = async (id: string) => {
+    await supabase
+      .from("matches")
+      .delete()
+      .eq("id", id)
+
+    loadPronostics()
   }
 
   return (
@@ -103,63 +77,49 @@ export default function Dashboard() {
             key={p.id}
             className="bg-gradient-to-r from-gray-900 to-gray-800 p-6 rounded-xl border border-gray-700"
           >
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-              
-              <div>
-                <h2 className="text-lg font-bold">{p.match}</h2>
+            <h2 className="text-lg font-bold">{p.match}</h2>
 
-                <p className="text-sm text-gray-400">
-                  {p.competition} • {p.date} • 🕒 {p.heure}
-                </p>
+            <p className="text-sm text-gray-400">
+              {p.competition} • {p.date} • 🕒 {p.heure}
+            </p>
 
-                <p className="text-yellow-400 font-semibold mt-2">
-                  🎯 {p.prediction || "Non définie"}
-                </p>
+            <p className="text-yellow-400 font-semibold mt-2">
+              🎯 {p.prediction}
+            </p>
 
-                <p className="text-sm mt-1">
-                  💰 Cote: {p.cote}
-                </p>
+            <p className="text-sm mt-1">
+              💰 Cote: {p.cote}
+            </p>
 
-                <span
-                  className={`inline-block mt-2 px-3 py-1 text-sm rounded-lg ${
-                    p.status === "Gagné"
-                      ? "bg-green-600"
-                      : p.status === "Perdu"
-                      ? "bg-red-600"
-                      : "bg-gray-600"
-                  }`}
-                >
-                  {p.status}
-                </span>
-              </div>
+            <span className="inline-block mt-2 px-3 py-1 text-sm rounded-lg bg-gray-600">
+              {p.status}
+            </span>
 
-              <div className="flex gap-2 flex-wrap">
-                {p.status === "En attente" && (
-                  <>
-                    <button
-                      onClick={() => updateStatus(p.id, "Gagné")}
-                      className="bg-green-600 px-3 py-2 rounded-lg hover:bg-green-500 transition"
-                    >
-                      ✅ Gagné
-                    </button>
+            <div className="flex gap-2 mt-4">
+              {p.status === "En attente" && (
+                <>
+                  <button
+                    onClick={() => updateStatus(p.id, "Gagné")}
+                    className="bg-green-600 px-3 py-2 rounded-lg hover:bg-green-500"
+                  >
+                    ✅ Gagné
+                  </button>
 
-                    <button
-                      onClick={() => updateStatus(p.id, "Perdu")}
-                      className="bg-red-600 px-3 py-2 rounded-lg hover:bg-red-500 transition"
-                    >
-                      ❌ Perdu
-                    </button>
-                  </>
-                )}
+                  <button
+                    onClick={() => updateStatus(p.id, "Perdu")}
+                    className="bg-red-600 px-3 py-2 rounded-lg hover:bg-red-500"
+                  >
+                    ❌ Perdu
+                  </button>
+                </>
+              )}
 
-                <button
-                  onClick={() => deletePronostic(p.id)}
-                  className="bg-gray-700 px-3 py-2 rounded-lg hover:bg-gray-600 transition"
-                >
-                  🗑 Supprimer
-                </button>
-              </div>
-
+              <button
+                onClick={() => deletePronostic(p.id)}
+                className="bg-gray-700 px-3 py-2 rounded-lg hover:bg-gray-600"
+              >
+                🗑 Supprimer
+              </button>
             </div>
           </div>
         ))}
