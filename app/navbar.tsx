@@ -4,10 +4,11 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
+import type { User } from "@supabase/supabase-js"
 
 export default function Navbar() {
   const router = useRouter()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -18,14 +19,14 @@ export default function Navbar() {
 
     getUser()
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
+    const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null)
       }
     )
 
     return () => {
-      listener.subscription.unsubscribe()
+      authListener.subscription.unsubscribe()
     }
   }, [])
 
@@ -47,8 +48,13 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <nav className="hidden md:flex gap-6 items-center">
-          <Link href="/pronostics">Pronostics</Link>
-          <Link href="/vip">VIP</Link>
+          <Link href="/pronostics" className="text-gray-800 font-medium">
+            Pronostics
+          </Link>
+
+          <Link href="/vip" className="text-gray-800 font-medium">
+            VIP
+          </Link>
 
           {!user ? (
             <Link
@@ -78,17 +84,18 @@ export default function Navbar() {
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden text-2xl text-blue-600"
         >
-          ☰
+          {menuOpen ? "✕" : "☰"}
         </button>
       </div>
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden px-6 pb-6 space-y-4 bg-white border-t">
+        <div className="md:hidden px-6 pb-6 pt-4 space-y-4 bg-white border-t">
+          
           <Link
             href="/pronostics"
             onClick={() => setMenuOpen(false)}
-            className="block"
+            className="block text-gray-800 font-medium text-lg"
           >
             Pronostics
           </Link>
@@ -96,7 +103,7 @@ export default function Navbar() {
           <Link
             href="/vip"
             onClick={() => setMenuOpen(false)}
-            className="block"
+            className="block text-gray-800 font-medium text-lg"
           >
             VIP
           </Link>
@@ -111,7 +118,7 @@ export default function Navbar() {
             </Link>
           ) : (
             <div className="space-y-3">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 break-all">
                 {user.email}
               </p>
 
