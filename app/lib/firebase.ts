@@ -1,14 +1,22 @@
 import { initializeApp } from "firebase/app"
 import { getMessaging, getToken, isSupported } from "firebase/messaging"
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD2sp4YsZDlEr2r_RIq5zbE1hqgI20lmvw",
+ const firebaseConfig = {
+
+  apiKey: "AIzaSyD2sp4YsZD1Er2r_RIq5zbE1hqgI20lmvw",
+
   authDomain: "joking-app-d3e29.firebaseapp.com",
+
   projectId: "joking-app-d3e29",
+
   storageBucket: "joking-app-d3e29.firebasestorage.app",
+
   messagingSenderId: "156633010732",
-  appId: "1:156633010732:web:5ac80fcc9fcbb0aec9f789",
-}
+
+  appId: "1:156633010732:web:5ac80fcc9fcbb0aec9f789"
+
+ };
+
 
 const app = initializeApp(firebaseConfig)
 
