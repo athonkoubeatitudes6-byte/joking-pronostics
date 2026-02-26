@@ -1,17 +1,68 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect } from "react"
+import { useEffect, useState, useRef } from "react"
 import { requestNotificationPermission } from "./lib/firebase"
+import { useAuth } from "./context/AuthContext"
+import { signOut } from "firebase/auth"
+import { auth } from "./lib/firebase"
 
 export default function Home() {
+
+  const { user } = useAuth()
+  const [open, setOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     requestNotificationPermission()
   }, [])
 
+  // Fermer menu si clique extérieur
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const handleLogout = async () => {
+    await signOut(auth)
+    window.location.reload()
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white relative">
+
+      {/* PHOTO GOOGLE TOP RIGHT */}
+      {user && (
+        <div className="absolute top-6 right-6" ref={dropdownRef}>
+          <img
+            src={user.photoURL || "/avatar.png"}
+            alt="profile"
+            onClick={() => setOpen(!open)}
+            className="w-12 h-12 rounded-full border-2 border-yellow-400 cursor-pointer hover:scale-105 transition"
+          />
+
+          {open && (
+            <div className="absolute right-0 mt-3 w-48 bg-gray-900 border border-white/10 rounded-xl shadow-xl backdrop-blur-md overflow-hidden">
+              <div className="px-4 py-3 border-b border-white/10 text-sm text-gray-300">
+                {user.email}
+              </div>
+
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-3 text-sm hover:bg-red-500/20 hover:text-red-400 transition"
+              >
+                🚪 Déconnexion
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* HERO PREMIUM */}
       <section className="text-center pt-20 pb-16 px-6">
@@ -84,7 +135,6 @@ export default function Home() {
           © {new Date().getFullYear()} JOKING - Tous droits réservés
         </p>
 
-        {/* PETIT POINT ADMIN */}
         <Link href="/admin">
           <div className="absolute bottom-4 right-4 w-3 h-3 bg-gray-600 rounded-full hover:bg-yellow-400 transition cursor-pointer"></div>
         </Link>
