@@ -1,7 +1,8 @@
 import InstallButton from "./components/InstallButton"
 import BottomNav from "./components/BottomNav"
-import "./globals.css"
 import Navbar from "./navbar"
+import { AuthProvider } from "./context/AuthContext"
+import "./globals.css"
 import type { Metadata, Viewport } from "next"
 
 export const metadata: Metadata = {
@@ -34,22 +35,26 @@ export default function RootLayout({
       className="bg-black"
     >
       <body className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white antialiased overflow-x-hidden">
+        
+        <AuthProvider>
 
-        {/* Navbar Desktop */}
-        <div className="hidden md:block">
-          <Navbar />
-        </div>
+          {/* Navbar Desktop */}
+          <div className="hidden md:block">
+            <Navbar />
+          </div>
 
-        {/* Main Content */}
-        <main className="w-full min-h-screen px-4 sm:px-6 lg:px-8 py-6 pb-24 md:pb-8">
-          {children}
-        </main>
+          {/* Main Content */}
+          <main className="w-full min-h-screen px-4 sm:px-6 lg:px-8 py-6 pb-24 md:pb-8">
+            {children}
+          </main>
 
-        {/* Bottom Navigation Mobile */}
-        <BottomNav />
+          {/* Bottom Navigation Mobile */}
+          <BottomNav />
 
-        {/* PWA Install Button */}
-        <InstallButton />
+          {/* PWA Install Button */}
+          <InstallButton />
+
+        </AuthProvider>
 
       </body>
     </html>

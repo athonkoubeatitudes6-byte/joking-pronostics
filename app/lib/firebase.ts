@@ -1,4 +1,10 @@
 import { initializeApp } from "firebase/app"
+import { 
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut
+} from "firebase/auth"
 import { getMessaging, getToken, isSupported } from "firebase/messaging"
 
 const firebaseConfig = {
@@ -11,6 +17,25 @@ const firebaseConfig = {
 }
 
 const app = initializeApp(firebaseConfig)
+
+/* =========================
+   🔐 AUTH CONFIGURATION
+========================= */
+
+export const auth = getAuth(app)
+export const googleProvider = new GoogleAuthProvider()
+
+export const signInWithGoogle = () => {
+  return signInWithPopup(auth, googleProvider)
+}
+
+export const logout = () => {
+  return signOut(auth)
+}
+
+/* =========================
+   🔔 MESSAGING (EXISTANT)
+========================= */
 
 export const messagingPromise = isSupported().then((supported) =>
   supported ? getMessaging(app) : null
@@ -48,7 +73,6 @@ export async function requestNotificationPermission() {
 
     console.log("✅ TOKEN WEB:", token)
 
-    // 🔥 Abonnement automatique au topic FREE
     const response = await fetch("/api/subscribe-topic", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
