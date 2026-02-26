@@ -28,23 +28,27 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html
+      lang="fr"
+      suppressHydrationWarning
+      className="bg-black"
+    >
       <body className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white antialiased overflow-x-hidden">
-        
+
         {/* Navbar Desktop uniquement */}
         <div className="hidden md:block">
           <Navbar />
         </div>
 
-        {/* Contenu principal */}
-        <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 md:pb-8">
+        {/* Contenu principal FULL WIDTH */}
+        <main className="w-full min-h-screen px-4 sm:px-6 lg:px-8 py-6 pb-24 md:pb-8">
           {children}
         </main>
 
         {/* Bottom Navigation Mobile */}
         <div className="md:hidden fixed bottom-0 left-0 w-full bg-gray-950 border-t border-gray-800 shadow-lg">
           <div className="flex justify-around items-center py-3 text-xs">
-            
+
             <Link
               href="/"
               className="flex flex-col items-center text-gray-400 hover:text-white transition"
@@ -79,7 +83,9 @@ export default function RootLayout({
 
           </div>
         </div>
+
         <InstallButton />
+
       </body>
     </html>
   )
