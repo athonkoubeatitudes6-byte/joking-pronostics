@@ -49,7 +49,7 @@ export default function NewPronostic() {
 
     // 🔥 APPEL API NOTIFICATION
     try {
-      await fetch("/api/send-notification", {
+      const response = await fetch("/api/send-notification", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,6 +61,10 @@ export default function NewPronostic() {
           type,
         }),
       })
+
+      if (!response.ok) {
+        console.error("Erreur API notification")
+      }
     } catch (err) {
       console.error("Erreur notification :", err)
     }
@@ -88,7 +92,6 @@ export default function NewPronostic() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
 
-          {/* Match */}
           <input
             type="text"
             placeholder="Match (ex: PSG vs Real Madrid)"
@@ -98,7 +101,6 @@ export default function NewPronostic() {
             required
           />
 
-          {/* Compétition */}
           <select
             className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
             value={competition}
@@ -116,7 +118,6 @@ export default function NewPronostic() {
             <option>CAN</option>
           </select>
 
-          {/* Prédiction */}
           <input
             type="text"
             placeholder="Prédiction (ex: +2.5 buts, BTTS, PSG gagne)"
@@ -126,7 +127,6 @@ export default function NewPronostic() {
             required
           />
 
-          {/* Cote */}
           <input
             type="number"
             step="0.01"
@@ -137,7 +137,6 @@ export default function NewPronostic() {
             required
           />
 
-          {/* Type */}
           <select
             className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
             value={type}
@@ -147,7 +146,6 @@ export default function NewPronostic() {
             <option>VIP</option>
           </select>
 
-          {/* Date */}
           <input
             type="date"
             className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
@@ -156,7 +154,6 @@ export default function NewPronostic() {
             required
           />
 
-          {/* Heure */}
           <input
             type="time"
             className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
@@ -165,7 +162,6 @@ export default function NewPronostic() {
             required
           />
 
-          {/* Bouton */}
           <button
             type="submit"
             disabled={loading}
