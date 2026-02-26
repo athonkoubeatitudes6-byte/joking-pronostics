@@ -2,63 +2,73 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase"
 
 export default function NewPronostic() {
   const router = useRouter()
 
   const [match, setMatch] = useState("")
   const [competition, setCompetition] = useState("")
-  const [prediction, setPrediction] = useState("") // ✅ AJOUT
+  const [prediction, setPrediction] = useState("")
   const [cote, setCote] = useState("")
   const [type, setType] = useState("Gratuit")
   const [date, setDate] = useState("")
   const [heure, setHeure] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!competition) {
-      alert("Veuillez choisir une compétition")
-      return
-    }
-
-    if (!prediction) {
-      alert("Veuillez entrer une prédiction")
-      return
-    }
-
-    if (!heure) {
-      alert("Veuillez choisir l'heure du match")
+    if (!competition || !prediction || !heure) {
+      alert("Veuillez remplir tous les champs obligatoires")
       return
     }
 
     setLoading(true)
 
-    const newPronostic = {
-      id: Date.now(),
-      match,
-      competition,
-      prediction, // ✅ AJOUT
-      cote,
-      type,
-      date,
-      heure,
-      status: "En attente",
-      createdAt: new Date().toISOString(),
+    // ✅ INSERTION SUPABASE
+    const { error } = await supabase.from("matches").insert([
+      {
+        match,
+        competition,
+        prediction,
+        cote,
+        type,
+        date,
+        heure,
+        status: "En attente",
+      },
+    ])
+
+    if (error) {
+      console.error(error)
+      alert("Erreur lors de l'ajout du match")
+      setLoading(false)
+      return
     }
 
-    const existing = JSON.parse(localStorage.getItem("pronostics") || "[]")
+    // 🔥 APPEL API NOTIFICATION
+    try {
+      await fetch("/api/send-notification", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          match,
+          competition,
+          prediction,
+          type,
+        }),
+      })
+    } catch (err) {
+      console.error("Erreur notification :", err)
+    }
 
-    localStorage.setItem(
-      "pronostics",
-      JSON.stringify([newPronostic, ...existing])
-    )
-
-    // Reset formulaire
+    // RESET FORMULAIRE
     setMatch("")
     setCompetition("")
-    setPrediction("") // ✅ RESET
+    setPrediction("")
     setCote("")
     setType("Gratuit")
     setDate("")
@@ -106,7 +116,7 @@ export default function NewPronostic() {
             <option>CAN</option>
           </select>
 
-          {/* ✅ Prédiction */}
+          {/* Prédiction */}
           <input
             type="text"
             placeholder="Prédiction (ex: +2.5 buts, BTTS, PSG gagne)"
