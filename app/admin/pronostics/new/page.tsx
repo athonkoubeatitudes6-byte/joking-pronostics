@@ -26,7 +26,6 @@ export default function NewPronostic() {
 
     setLoading(true)
 
-    // ✅ INSERTION SUPABASE
     const { error } = await supabase.from("matches").insert([
       {
         match,
@@ -41,35 +40,21 @@ export default function NewPronostic() {
     ])
 
     if (error) {
-      console.error(error)
       alert("Erreur lors de l'ajout du match")
       setLoading(false)
       return
     }
 
-    // 🔥 APPEL API NOTIFICATION
     try {
-      const response = await fetch("/api/send-notification", {
+      await fetch("/api/send-notification", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          match,
-          competition,
-          prediction,
-          type,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ match, competition, prediction, type }),
       })
-
-      if (!response.ok) {
-        console.error("Erreur API notification")
-      }
     } catch (err) {
-      console.error("Erreur notification :", err)
+      console.error(err)
     }
 
-    // RESET FORMULAIRE
     setMatch("")
     setCompetition("")
     setPrediction("")
@@ -83,26 +68,32 @@ export default function NewPronostic() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex justify-center items-center p-6">
-      <div className="w-full max-w-xl bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-700">
-        
-        <h1 className="text-3xl font-bold text-yellow-500 mb-8 text-center">
+    <div className="min-h-screen bg-black text-white flex items-start md:items-center justify-center px-4 py-8">
+      
+      <div className="w-full max-w-xl bg-gradient-to-br from-gray-900 to-gray-800 
+                      p-5 sm:p-8 
+                      rounded-xl sm:rounded-2xl 
+                      shadow-2xl 
+                      border border-gray-700">
+
+        {/* Titre responsive */}
+        <h1 className="text-2xl sm:text-3xl font-bold text-yellow-500 mb-6 sm:mb-8 text-center">
           Ajouter Pronostic
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
 
           <input
             type="text"
             placeholder="Match (ex: PSG vs Real Madrid)"
-            className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+            className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
             value={match}
             onChange={(e) => setMatch(e.target.value)}
             required
           />
 
           <select
-            className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+            className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
             value={competition}
             onChange={(e) => setCompetition(e.target.value)}
             required
@@ -120,8 +111,8 @@ export default function NewPronostic() {
 
           <input
             type="text"
-            placeholder="Prédiction (ex: +2.5 buts, BTTS, PSG gagne)"
-            className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+            placeholder="Prédiction"
+            className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
             value={prediction}
             onChange={(e) => setPrediction(e.target.value)}
             required
@@ -131,14 +122,14 @@ export default function NewPronostic() {
             type="number"
             step="0.01"
             placeholder="Cote (ex: 1.85)"
-            className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+            className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
             value={cote}
             onChange={(e) => setCote(e.target.value)}
             required
           />
 
           <select
-            className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+            className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
             value={type}
             onChange={(e) => setType(e.target.value)}
           >
@@ -146,26 +137,28 @@ export default function NewPronostic() {
             <option>VIP</option>
           </select>
 
-          <input
-            type="date"
-            className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
+          <div className="flex flex-col sm:flex-row gap-4">
+            <input
+              type="date"
+              className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
 
-          <input
-            type="time"
-            className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
-            value={heure}
-            onChange={(e) => setHeure(e.target.value)}
-            required
-          />
+            <input
+              type="time"
+              className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+              value={heure}
+              onChange={(e) => setHeure(e.target.value)}
+              required
+            />
+          </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full p-4 bg-yellow-500 text-black font-bold rounded-xl hover:bg-yellow-400 transition transform hover:scale-105 disabled:opacity-50"
+            className="w-full p-3 sm:p-4 text-sm sm:text-base bg-yellow-500 text-black font-bold rounded-lg sm:rounded-xl hover:bg-yellow-400 transition transform hover:scale-105 disabled:opacity-50"
           >
             {loading ? "Publication..." : "Publier"}
           </button>
