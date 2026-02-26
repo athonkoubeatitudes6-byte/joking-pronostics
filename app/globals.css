@@ -1,26 +1,39 @@
 @import "tailwindcss";
 
+/* === FORCE APP DARK MODE === */
+html,
+body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #0f172a; /* Couleur premium */
+}
+
+/* Supprime les variables blanches inutiles */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0f172a;
+  --foreground: #ffffff;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* Supprime le changement auto selon le thème système */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f172a;
+    --foreground: #ffffff;
   }
 }
 
+/* Appliquer définitivement */
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background-color: #0f172a;
+  color: #ffffff;
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Next.js root */
+#__next {
+  min-height: 100%;
+  background-color: #0f172a;
 }
