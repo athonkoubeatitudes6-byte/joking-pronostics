@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
+import { useAuth } from "../context/AuthContext"
+import { logout } from "../lib/firebase"
 
 type MatchType = {
   id: string
@@ -18,6 +20,9 @@ type MatchType = {
 
 export default function Admin() {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
+
+  const ADMIN_EMAIL = "beatitudeathonkou7@gmail.com"
 
   const [matchs, setMatchs] = useState<MatchType[]>([])
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
@@ -44,22 +49,19 @@ export default function Admin() {
     type: "Gratuit" as "Gratuit" | "VIP",
   })
 
-  // 🔐 Vérification authentification Supabase
+  // 🔐 Vérification Firebase + Email admin
   useEffect(() => {
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getUser()
-
-      if (!data.user) {
-        router.push("/admin/login")
+    if (!authLoading) {
+      if (!user) {
+        router.push("/login?redirect=/admin")
+      } else if (user.email !== ADMIN_EMAIL) {
+        router.push("/")
       } else {
         setIsCheckingAuth(false)
       }
     }
+  }, [user, authLoading, router])
 
-    checkUser()
-  }, [router])
-
-  // 📦 Charger les matchs
   useEffect(() => {
     if (!isCheckingAuth) {
       fetchMatchs()
@@ -124,11 +126,11 @@ export default function Admin() {
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    router.push("/admin/login")
+    await logout()
+    router.push("/")
   }
 
-  if (isCheckingAuth) return null
+  if (authLoading || isCheckingAuth) return null
 
   return (
     <main className="min-h-screen bg-black text-white p-10">
@@ -146,7 +148,6 @@ export default function Admin() {
         onSubmit={handleSubmit}
         className="bg-gray-900 p-6 rounded-xl space-y-4 max-w-2xl"
       >
-        {/* ✅ COMPETITION SELECT */}
         <select
           name="competition"
           value={form.competition}

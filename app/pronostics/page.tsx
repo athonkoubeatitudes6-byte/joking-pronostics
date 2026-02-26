@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
+import { useAuth } from "../context/AuthContext"
+import { useRouter } from "next/navigation"
 
 interface Pronostic {
   id: string
@@ -16,12 +18,23 @@ interface Pronostic {
 }
 
 export default function Pronostics() {
+  const { user, loading: authLoading } = useAuth()
+  const router = useRouter()
+
   const [matchs, setMatchs] = useState<Pronostic[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchMatchs()
-  }, [])
+    if (!authLoading && !user) {
+      router.push("/login?redirect=/pronostics")
+    }
+  }, [user, authLoading, router])
+
+  useEffect(() => {
+    if (user) {
+      fetchMatchs()
+    }
+  }, [user])
 
   const fetchMatchs = async () => {
     const { data, error } = await supabase
@@ -36,6 +49,15 @@ export default function Pronostics() {
     }
 
     setLoading(false)
+  }
+
+  // Pendant vérification auth
+  if (authLoading || (!user && !authLoading)) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-400">Chargement...</p>
+      </main>
+    )
   }
 
   return (
@@ -61,7 +83,6 @@ export default function Pronostics() {
             key={match.id}
             className="bg-white p-5 rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 active:scale-[0.98]"
           >
-            {/* Badge compétition */}
             <div className="flex justify-between items-center mb-3">
               <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
                 {match.competition}
@@ -72,7 +93,6 @@ export default function Pronostics() {
               </span>
             </div>
 
-            {/* Match */}
             <h2 className="text-lg sm:text-xl font-bold text-gray-900 leading-snug">
               {match.match}
             </h2>
@@ -81,7 +101,6 @@ export default function Pronostics() {
               🕒 {match.heure}
             </p>
 
-            {/* Prediction */}
             <div className="mt-4 p-3 bg-gray-50 rounded-xl">
               <p className="text-blue-600 font-semibold text-sm">
                 🎯 {match.prediction}
