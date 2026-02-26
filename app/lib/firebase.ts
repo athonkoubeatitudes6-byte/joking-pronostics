@@ -1,22 +1,14 @@
 import { initializeApp } from "firebase/app"
 import { getMessaging, getToken, isSupported } from "firebase/messaging"
 
- const firebaseConfig = {
-
+const firebaseConfig = {
   apiKey: "AIzaSyD2sp4YsZD1Er2r_RIq5zbE1hqgI20lmvw",
-
   authDomain: "joking-app-d3e29.firebaseapp.com",
-
   projectId: "joking-app-d3e29",
-
   storageBucket: "joking-app-d3e29.firebasestorage.app",
-
   messagingSenderId: "156633010732",
-
-  appId: "1:156633010732:web:5ac80fcc9fcbb0aec9f789"
-
- };
-
+  appId: "1:156633010732:web:5ac80fcc9fcbb0aec9f789",
+}
 
 const app = initializeApp(firebaseConfig)
 
@@ -25,27 +17,55 @@ export const messagingPromise = isSupported().then((supported) =>
 )
 
 export async function requestNotificationPermission() {
-  const messaging = await messagingPromise
-  if (!messaging) return
+  try {
+    const messaging = await messagingPromise
 
-  const permission = await Notification.requestPermission()
-  if (permission !== "granted") return
+    if (!messaging) {
+      console.log("❌ Messaging non supporté sur ce navigateur")
+      return
+    }
 
-  const token = await getToken(messaging, {
-    vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-  })
+    const permission = await Notification.requestPermission()
 
-  if (!token) return
+    if (permission !== "granted") {
+      console.log("❌ Permission refusée")
+      return
+    }
 
-  // 🔥 Abonnement au topic FREE par défaut
-  await fetch("/api/subscribe-topic", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      token,
-      topic: "free",
-    }),
-  })
+    if (!process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY) {
+      console.log("❌ VAPID KEY manquante dans .env.local")
+      return
+    }
 
-  console.log("Token enregistré et abonné au topic free")
+    const token = await getToken(messaging, {
+      vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+    })
+
+    if (!token) {
+      console.log("❌ Aucun token généré")
+      return
+    }
+
+    console.log("✅ TOKEN WEB:", token)
+
+    // 🔥 Abonnement automatique au topic FREE
+    const response = await fetch("/api/subscribe-topic", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token,
+        topic: "free",
+      }),
+    })
+
+    if (!response.ok) {
+      console.log("❌ Erreur abonnement topic")
+      return
+    }
+
+    console.log("🔥 Token enregistré et abonné au topic free")
+
+  } catch (error) {
+    console.error("❌ Erreur notification:", error)
+  }
 }
