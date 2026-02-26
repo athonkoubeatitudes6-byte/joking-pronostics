@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     const topic = type === "VIP" ? "vip" : "free"
 
     const message = {
-      topic,
+      token: "TON_TOKEN_ICI",
       notification: {
         title: type === "VIP" 
           ? "🔥 Nouveau Match VIP !" 
