@@ -17,7 +17,6 @@ export default function Home() {
     requestNotificationPermission()
   }, [])
 
-  // Fermer menu si clique extérieur
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -37,7 +36,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white relative">
 
-      {/* PHOTO GOOGLE TOP RIGHT */}
+      {/* PHOTO GOOGLE */}
       {user && (
         <div className="absolute top-6 right-6" ref={dropdownRef}>
           <img
@@ -64,7 +63,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* HERO PREMIUM */}
+      {/* HERO */}
       <section className="text-center pt-20 pb-16 px-6">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
           Les meilleurs pronostics <br className="hidden sm:block" />
@@ -75,9 +74,18 @@ export default function Home() {
           Analyse experte. Discipline. Résultats.
           Rejoins la communauté JOKING dès aujourd’hui.
         </p>
+
+        {/* BOUTON PRONOSTICS GRATUITS */}
+        <div className="mt-6">
+          <Link href="/pronostics">
+            <button className="px-8 py-3 bg-yellow-400 text-black font-bold rounded-full hover:bg-yellow-300 transition">
+              Voir les pronostics gratuits
+            </button>
+          </Link>
+        </div>
       </section>
 
-      {/* STATISTIQUES PREMIUM */}
+      {/* STATISTIQUES */}
       <section className="px-6 mb-16">
         <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-5">
 
@@ -99,8 +107,42 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION VIP PREMIUM */}
-      <section className="px-6 pb-24">
+      {/* COMMENT ÇA MARCHE */}
+      <section className="px-6 mb-20">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-10">
+            Comment ça marche ?
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-left">
+
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+              <h3 className="font-semibold text-yellow-400 mb-2">1. Analyse des matchs</h3>
+              <p className="text-gray-400 text-sm">
+                Nos experts analysent les matchs à l’aide de statistiques avancées et d’une stratégie éprouvée.
+              </p>
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+              <h3 className="font-semibold text-yellow-400 mb-2">2. Publication des pronostics</h3>
+              <p className="text-gray-400 text-sm">
+                Les pronostics sont publiés chaque jour, avec des explications claires et précises.
+              </p>
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+              <h3 className="font-semibold text-yellow-400 mb-2">3. Gagner intelligemment</h3>
+              <p className="text-gray-400 text-sm">
+                Les membres appliquent les conseils avec discipline pour maximiser leurs chances de gains.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION VIP */}
+      <section className="px-6 pb-16">
         <div className="max-w-4xl mx-auto bg-gradient-to-r from-yellow-500/10 to-yellow-400/10 border border-yellow-400 rounded-3xl p-8 text-center shadow-lg">
 
           <h2 className="text-2xl sm:text-3xl font-bold mb-4">
@@ -118,11 +160,29 @@ export default function Home() {
             </button>
           </Link>
 
+          {/* TEXTE RASSURANCE */}
+          <p className="text-xs text-gray-400 mt-6">
+            Accès immédiat après inscription • Support disponible • Mises mises à jour chaque jour
+          </p>
+
         </div>
+      </section>
+
+      {/* PREUVE SOCIALE */}
+      <section className="px-6 mb-16 text-center">
+        <p className="text-gray-400 text-sm max-w-2xl mx-auto">
+          Plus de 2 500 membres actifs font confiance à JOKING chaque jour pour leurs pronostics football.
+        </p>
       </section>
 
       {/* FOOTER */}
       <footer className="bg-black/40 border-t border-white/10 text-gray-400 py-10 px-6 text-center relative">
+
+        {/* AVERTISSEMENT LÉGAL */}
+        <p className="text-xs text-red-400 mb-6">
+          Les paris sportifs comportent des risques. JOKING ne garantit aucun gain. Jouez de manière responsable.
+        </p>
+
         <h4 className="text-white text-xl font-semibold mb-3">
           JOKING
         </h4>
@@ -131,13 +191,24 @@ export default function Home() {
           Plateforme de pronostics football fiables et professionnels.
         </p>
 
+        {/* CONDITIONS & CONFIDENTIALITÉ */}
+        <div className="text-xs space-y-2 mb-4">
+          <p>
+            En utilisant cette plateforme, vous acceptez nos conditions d’utilisation. Les pronostics sont fournis à titre informatif et ne constituent pas une incitation au jeu.
+          </p>
+          <p>
+            JOKING respecte la confidentialité de vos données personnelles. Aucune information n’est partagée avec des tiers sans votre consentement.
+          </p>
+        </div>
+
         <p className="text-xs">
-          © {new Date().getFullYear()} JOKING - Tous droits réservés
+          © {new Date().getFullYear()} JOKING – Plateforme de pronostics football. Tous droits réservés.
         </p>
 
         <Link href="/admin">
           <div className="absolute bottom-4 right-4 w-3 h-3 bg-gray-600 rounded-full hover:bg-yellow-400 transition cursor-pointer"></div>
         </Link>
+
       </footer>
 
     </main>
