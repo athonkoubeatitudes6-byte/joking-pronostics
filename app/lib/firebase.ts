@@ -5,6 +5,9 @@ import {
   signInWithPopup,
   signOut
 } from "firebase/auth"
+import { 
+  getFirestore 
+} from "firebase/firestore"
 import { getMessaging, getToken, isSupported } from "firebase/messaging"
 
 const firebaseConfig = {
@@ -19,7 +22,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 
 /* =========================
-   🔐 AUTH CONFIGURATION
+   🔐 AUTH
 ========================= */
 
 export const auth = getAuth(app)
@@ -34,7 +37,13 @@ export const logout = () => {
 }
 
 /* =========================
-   🔔 MESSAGING (EXISTANT)
+   🗄️ FIRESTORE (NOUVEAU)
+========================= */
+
+export const db = getFirestore(app)
+
+/* =========================
+   🔔 MESSAGING
 ========================= */
 
 export const messagingPromise = isSupported().then((supported) =>
