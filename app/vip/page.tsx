@@ -18,23 +18,27 @@ interface Pronostic {
 }
 
 export default function VIP() {
-  const { user, loading: authLoading } = useAuth()
+  const { user, loading: authLoading, plan } = useAuth()
   const router = useRouter()
 
   const [matchsVIP, setMatchsVIP] = useState<Pronostic[]>([])
   const [loading, setLoading] = useState(true)
 
+  // 🔐 Redirection si non connecté
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login?redirect=/vip")
     }
   }, [user, authLoading, router])
 
+  // 📥 Charger les matchs seulement si plan autorisé
   useEffect(() => {
-    if (user) {
+    if (user && (plan === "vip" || plan === "vip_pro")) {
       fetchVIP()
+    } else {
+      setLoading(false)
     }
-  }, [user])
+  }, [user, plan])
 
   const fetchVIP = async () => {
     const { data, error } = await supabase
@@ -51,11 +55,33 @@ export default function VIP() {
     setLoading(false)
   }
 
-  // Pendant vérification auth
-  if (authLoading || (!user && !authLoading)) {
+  // ⏳ Chargement auth
+  if (authLoading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
         <p className="text-gray-400">Chargement...</p>
+      </main>
+    )
+  }
+
+  // 🔒 Bloqué si FREE
+  if (user && plan === "free") {
+    return (
+      <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black text-white text-center px-6">
+        <h1 className="text-3xl font-bold mb-4">
+          🔒 Accès VIP réservé
+        </h1>
+
+        <p className="text-gray-300 mb-6">
+          Passe en VIP pour accéder aux pronostics premium.
+        </p>
+
+        <button
+          onClick={() => router.push("/offers")}
+          className="bg-yellow-400 text-black font-bold px-6 py-3 rounded-full hover:scale-105 transition"
+        >
+          Voir les offres 👑
+        </button>
       </main>
     )
   }
