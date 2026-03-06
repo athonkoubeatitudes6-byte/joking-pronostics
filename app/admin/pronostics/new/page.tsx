@@ -55,6 +55,7 @@ export default function NewPronostic() {
       console.error(err)
     }
 
+    // reset formulaire
     setMatch("")
     setCompetition("")
     setPrediction("")
@@ -71,22 +72,19 @@ export default function NewPronostic() {
     <div className="min-h-screen bg-black text-white flex items-start md:items-center justify-center px-4 py-8">
 
       <div className="w-full max-w-xl bg-gradient-to-br from-gray-900 to-gray-800 
-                      p-5 sm:p-8 
-                      rounded-xl sm:rounded-2xl 
-                      shadow-2xl 
-                      border border-gray-700">
+                      p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700">
 
-        <h1 className="text-2xl sm:text-3xl font-bold text-yellow-500 mb-6 sm:mb-8 text-center">
+        <h1 className="text-2xl sm:text-3xl font-bold text-yellow-500 mb-8 text-center">
           Ajouter Pronostic
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5">
 
           {/* MATCH */}
           <input
             type="text"
             placeholder="Match (ex: PSG vs Real Madrid)"
-            className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
+            className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700"
             value={match}
             onChange={(e) => setMatch(e.target.value)}
             required
@@ -94,7 +92,7 @@ export default function NewPronostic() {
 
           {/* COMPETITION */}
           <select
-            className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
+            className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700"
             value={competition}
             onChange={(e) => setCompetition(e.target.value)}
             required
@@ -102,35 +100,35 @@ export default function NewPronostic() {
 
             <option value="">Choisir compétition</option>
 
-            {/* Europe */}
+            {/* EUROPE */}
             <option>Ligue des Champions</option>
             <option>Europa League</option>
             <option>Europa Conference League</option>
 
-            {/* Top Ligues */}
+            {/* TOP LIGUES */}
             <option>Premier League</option>
             <option>La Liga</option>
             <option>Serie A</option>
             <option>Bundesliga</option>
             <option>Ligue 1</option>
 
-            {/* Autres Europe */}
+            {/* AUTRES EUROPE */}
             <option>Eredivisie</option>
             <option>Primeira Liga</option>
             <option>Super Lig</option>
             <option>Belgian Pro League</option>
             <option>Scottish Premiership</option>
 
-            {/* Afrique */}
+            {/* AFRIQUE */}
             <option>CAN</option>
             <option>CAF Champions League</option>
             <option>CAF Confederation Cup</option>
 
-            {/* Monde */}
+            {/* MONDE */}
             <option>Coupe du Monde</option>
             <option>Coupe du Monde des Clubs</option>
 
-            {/* Amérique */}
+            {/* AMERIQUE */}
             <option>Copa Libertadores</option>
             <option>Copa Sudamericana</option>
             <option>MLS</option>
@@ -141,7 +139,7 @@ export default function NewPronostic() {
           <input
             type="text"
             placeholder="Prédiction (ex: +2.5 buts)"
-            className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
+            className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700"
             value={prediction}
             onChange={(e) => setPrediction(e.target.value)}
             required
@@ -152,15 +150,15 @@ export default function NewPronostic() {
             type="number"
             step="0.01"
             placeholder="Cote (ex: 1.85)"
-            className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
+            className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700"
             value={cote}
             onChange={(e) => setCote(e.target.value)}
             required
           />
 
-          {/* TYPE */}
+          {/* TYPE PRONOSTIC */}
           <select
-            className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
+            className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700"
             value={type}
             onChange={(e) => setType(e.target.value)}
           >
@@ -171,9 +169,10 @@ export default function NewPronostic() {
 
           {/* DATE + HEURE */}
           <div className="flex flex-col sm:flex-row gap-4">
+
             <input
               type="date"
-              className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
+              className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
@@ -181,18 +180,19 @@ export default function NewPronostic() {
 
             <input
               type="time"
-              className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
+              className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700"
               value={heure}
               onChange={(e) => setHeure(e.target.value)}
               required
             />
+
           </div>
 
-          {/* BUTTON */}
+          {/* BOUTON */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full p-3 sm:p-4 bg-yellow-500 text-black font-bold rounded-xl hover:bg-yellow-400"
+            className="w-full p-4 bg-yellow-500 text-black font-bold rounded-xl hover:bg-yellow-400 transition"
           >
             {loading ? "Publication..." : "Publier"}
           </button>
