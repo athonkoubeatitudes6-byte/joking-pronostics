@@ -14,11 +14,12 @@ type MatchType = {
   cote: string
   date: string
   heure: string
-  type: "Gratuit" | "VIP"
+  type: "GRATUIT" | "FREE" | "VIP" | "VIP_PRO"
   status: "En attente" | "Gagné" | "Perdu"
 }
 
 export default function Admin() {
+
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
 
@@ -46,10 +47,10 @@ export default function Admin() {
     cote: "",
     date: "",
     heure: "",
-    type: "Gratuit" as "Gratuit" | "VIP",
+    type: "GRATUIT" as "GRATUIT" | "FREE" | "VIP" | "VIP_PRO",
   })
 
-  // 🔐 Vérification Firebase + Email admin
+  // 🔐 Vérification admin
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
@@ -69,6 +70,7 @@ export default function Admin() {
   }, [isCheckingAuth])
 
   const fetchMatchs = async () => {
+
     const { data, error } = await supabase
       .from("matches")
       .select("*")
@@ -77,30 +79,41 @@ export default function Admin() {
     if (!error && data) {
       setMatchs(data)
     }
+
   }
 
   const handleChange = (e: any) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
+
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    })
+
   }
 
   const handleSubmit = async (e: any) => {
+
     e.preventDefault()
 
-    const { error } = await supabase.from("matches").insert([
-      {
-        match: form.match,
-        competition: form.competition,
-        prediction: form.prediction,
-        cote: form.cote,
-        date: form.date,
-        heure: form.heure,
-        type: form.type,
-        status: "En attente",
-      },
-    ])
+    const { error } = await supabase
+      .from("matches")
+      .insert([
+        {
+          match: form.match,
+          competition: form.competition,
+          prediction: form.prediction,
+          cote: form.cote,
+          date: form.date,
+          heure: form.heure,
+          type: form.type,
+          status: "En attente",
+        },
+      ])
 
     if (!error) {
+
       fetchMatchs()
+
       setForm({
         match: "",
         competition: "",
@@ -108,46 +121,72 @@ export default function Admin() {
         cote: "",
         date: "",
         heure: "",
-        type: "Gratuit",
+        type: "GRATUIT",
       })
+
     } else {
       alert("Erreur lors de l'ajout")
     }
+
   }
 
   const setResult = async (id: string, result: "Gagné" | "Perdu") => {
-    await supabase.from("matches").update({ status: result }).eq("id", id)
+
+    await supabase
+      .from("matches")
+      .update({ status: result })
+      .eq("id", id)
+
     fetchMatchs()
+
   }
 
   const supprimerMatch = async (id: string) => {
-    await supabase.from("matches").delete().eq("id", id)
+
+    await supabase
+      .from("matches")
+      .delete()
+      .eq("id", id)
+
     fetchMatchs()
+
   }
 
   const handleLogout = async () => {
+
     await logout()
     router.push("/")
+
   }
 
   if (authLoading || isCheckingAuth) return null
 
   return (
+
     <main className="min-h-screen bg-black text-white p-10">
+
       <div className="flex justify-between items-center mb-10">
-        <h1 className="text-4xl font-bold">👑 Admin Dashboard</h1>
+
+        <h1 className="text-4xl font-bold">
+          👑 Admin Dashboard
+        </h1>
+
         <button
           onClick={handleLogout}
           className="bg-red-600 px-4 py-2 rounded-lg font-semibold"
         >
           Logout
         </button>
+
       </div>
+
+      {/* FORMULAIRE */}
 
       <form
         onSubmit={handleSubmit}
         className="bg-gray-900 p-6 rounded-xl space-y-4 max-w-2xl"
       >
+
         <select
           name="competition"
           value={form.competition}
@@ -156,11 +195,15 @@ export default function Admin() {
           required
         >
           <option value="">Choisir une compétition</option>
+
           {competitions.map((comp) => (
+
             <option key={comp} value={comp}>
               {comp}
             </option>
+
           ))}
+
         </select>
 
         <input
@@ -208,54 +251,91 @@ export default function Admin() {
           required
         />
 
+        {/* TYPE PRONOSTIC */}
+
         <select
           name="type"
           value={form.type}
           onChange={handleChange}
           className="w-full p-3 rounded bg-gray-800"
         >
-          <option value="Gratuit">Gratuit</option>
+
+          <option value="GRATUIT">Gratuit</option>
+          <option value="FREE">Free</option>
           <option value="VIP">VIP</option>
+          <option value="VIP_PRO">VIP PRO</option>
+
         </select>
 
         <button className="bg-yellow-500 text-black px-6 py-3 rounded-xl font-bold">
           ➕ Ajouter Match
         </button>
+
       </form>
 
+      {/* MATCHS */}
+
       <div className="mt-10 space-y-6">
+
         {matchs.map((match) => (
+
           <div key={match.id} className="bg-gray-900 p-6 rounded-xl">
-            <h2 className="text-xl font-bold">{match.match}</h2>
+
+            <h2 className="text-xl font-bold">
+              {match.match}
+            </h2>
+
             <p>{match.competition}</p>
-            <p>🕒 {match.date} • {match.heure}</p>
+
+            <p>
+              🕒 {match.date} • {match.heure}
+            </p>
+
             <p>🎯 {match.prediction}</p>
+
             <p>💰 {match.cote}</p>
-            <p className="mt-2 font-bold">{match.status}</p>
+
+            <p className="mt-2 font-bold">
+              {match.type}
+            </p>
+
+            <p className="font-bold">
+              {match.status}
+            </p>
 
             <div className="flex gap-3 mt-4">
+
               <button
                 onClick={() => setResult(match.id, "Gagné")}
                 className="bg-green-600 px-3 py-2 rounded"
               >
                 Gagné
               </button>
+
               <button
                 onClick={() => setResult(match.id, "Perdu")}
                 className="bg-red-600 px-3 py-2 rounded"
               >
                 Perdu
               </button>
+
               <button
                 onClick={() => supprimerMatch(match.id)}
                 className="bg-gray-700 px-3 py-2 rounded"
               >
                 Supprimer
               </button>
+
             </div>
+
           </div>
+
         ))}
+
       </div>
+
     </main>
+
   )
+
 }
