@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
-import { useAuth } from "../context/AuthContext"
-import { useRouter } from "next/navigation"
 
 interface Pronostic {
   id: string
@@ -19,17 +17,14 @@ interface Pronostic {
 
 export default function VIP() {
 
-  const { user, loading: authLoading } = useAuth()
-  const router = useRouter()
-
   const [matchs, setMatchs] = useState<Pronostic[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [filter, setFilter] = useState("FREE")
+  const [selectedType, setSelectedType] = useState("FREE")
 
   useEffect(() => {
     fetchMatchs()
-  }, [filter])
+  }, [selectedType])
 
   const fetchMatchs = async () => {
 
@@ -38,7 +33,7 @@ export default function VIP() {
     const { data, error } = await supabase
       .from("matches")
       .select("*")
-      .eq("type", filter)
+      .eq("type", selectedType)
       .eq("status", "En attente")
       .order("date", { ascending: true })
 
@@ -51,44 +46,45 @@ export default function VIP() {
 
   return (
 
-    <main className="min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-50 px-4 py-6 text-gray-900">
+    <main className="min-h-screen bg-yellow-50 px-4 py-6">
 
-      <h1 className="text-2xl font-extrabold mb-6">
+      <h1 className="text-3xl font-bold mb-6">
         👑 Pronostics VIP
       </h1>
+
 
       {/* BOUTONS */}
 
       <div className="flex gap-3 mb-6">
 
         <button
-          onClick={() => setFilter("FREE")}
-          className={`px-4 py-2 rounded-full font-bold ${
-            filter === "FREE"
-              ? "bg-black text-yellow-400"
-              : "bg-white border"
+          onClick={() => setSelectedType("FREE")}
+          className={`px-4 py-2 rounded-lg font-bold ${
+            selectedType === "FREE"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200"
           }`}
         >
           FREE
         </button>
 
         <button
-          onClick={() => setFilter("VIP")}
-          className={`px-4 py-2 rounded-full font-bold ${
-            filter === "VIP"
-              ? "bg-black text-yellow-400"
-              : "bg-white border"
+          onClick={() => setSelectedType("VIP")}
+          className={`px-4 py-2 rounded-lg font-bold ${
+            selectedType === "VIP"
+              ? "bg-yellow-500 text-white"
+              : "bg-gray-200"
           }`}
         >
           VIP
         </button>
 
         <button
-          onClick={() => setFilter("VIP_PRO")}
-          className={`px-4 py-2 rounded-full font-bold ${
-            filter === "VIP_PRO"
-              ? "bg-black text-yellow-400"
-              : "bg-white border"
+          onClick={() => setSelectedType("VIP PRO")}
+          className={`px-4 py-2 rounded-lg font-bold ${
+            selectedType === "VIP PRO"
+              ? "bg-black text-white"
+              : "bg-gray-200"
           }`}
         >
           VIP PRO
@@ -96,44 +92,41 @@ export default function VIP() {
 
       </div>
 
-      {loading && <p>Chargement...</p>}
+
+      {/* MATCHS */}
+
+      {loading && (
+        <p>Chargement...</p>
+      )}
 
       {!loading && matchs.length === 0 && (
         <p>Aucun pronostic disponible.</p>
       )}
 
-      <div className="space-y-5">
+      <div className="space-y-4">
 
         {matchs.map((match) => (
 
           <div
             key={match.id}
-            className="bg-white p-5 rounded-2xl shadow border border-yellow-300"
+            className="bg-white p-4 rounded-xl shadow"
           >
 
-            <div className="flex justify-between mb-2">
-
-              <span className="text-xs bg-black text-yellow-400 px-2 py-1 rounded">
-                {match.competition}
-              </span>
-
-              <span className="text-xs">
-                {match.date}
-              </span>
-
-            </div>
+            <p className="text-sm text-gray-500">
+              {match.competition}
+            </p>
 
             <h2 className="font-bold text-lg">
               {match.match}
             </h2>
 
-            <p className="text-sm text-gray-500">
-              🕒 {match.heure}
+            <p className="text-gray-500 text-sm">
+              {match.date} - {match.heure}
             </p>
 
-            <div className="mt-3 bg-yellow-50 p-3 rounded">
+            <div className="mt-3">
 
-              <p className="text-blue-600 font-semibold">
+              <p className="text-blue-600 font-bold">
                 🎯 {match.prediction}
               </p>
 
