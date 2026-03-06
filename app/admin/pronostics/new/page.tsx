@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 
 export default function NewPronostic() {
+
   const router = useRouter()
 
   const [match, setMatch] = useState("")
@@ -162,6 +163,7 @@ export default function NewPronostic() {
             value={type}
             onChange={(e) => setType(e.target.value)}
           >
+            <option value="GRATUIT">GRATUIT</option>
             <option value="FREE">FREE</option>
             <option value="VIP">VIP</option>
             <option value="VIP_PRO">VIP PRO</option>
