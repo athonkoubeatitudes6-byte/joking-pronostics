@@ -21,7 +21,7 @@ export default function VIP() {
   const { user, loading: authLoading, plan } = useAuth()
   const router = useRouter()
 
-  const [matchsVIP, setMatchsVIP] = useState<Pronostic[]>([])
+  const [matchs, setMatchs] = useState<Pronostic[]>([])
   const [loading, setLoading] = useState(true)
 
   // 🔐 Redirection si non connecté
@@ -31,25 +31,23 @@ export default function VIP() {
     }
   }, [user, authLoading, router])
 
-  // 📥 Charger les matchs seulement si plan autorisé
+  // 📥 Charger tous les types
   useEffect(() => {
-    if (user && (plan === "vip" || plan === "vip_pro")) {
-      fetchVIP()
-    } else {
-      setLoading(false)
+    if (user) {
+      fetchMatchs()
     }
-  }, [user, plan])
+  }, [user])
 
-  const fetchVIP = async () => {
+  const fetchMatchs = async () => {
     const { data, error } = await supabase
       .from("matches")
       .select("*")
-      .eq("type", "VIP")
+      .in("type", ["FREE", "VIP", "VIP_PRO"])
       .eq("status", "En attente")
       .order("date", { ascending: true })
 
     if (!error && data) {
-      setMatchsVIP(data)
+      setMatchs(data)
     }
 
     setLoading(false)
@@ -64,27 +62,20 @@ export default function VIP() {
     )
   }
 
-  // 🔒 Bloqué si FREE
-  if (user && plan === "free") {
-    return (
-      <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black text-white text-center px-6">
-        <h1 className="text-3xl font-bold mb-4">
-          🔒 Accès VIP réservé
-        </h1>
+  // 🔒 Filtrer selon plan
+  const matchsVisibles = matchs.filter((match, index) => {
+    if (plan === "free") {
+      if (match.type === "FREE") return true
+      if (match.type === "VIP" && index < 2) return true
+      return false
+    }
 
-        <p className="text-gray-300 mb-6">
-          Passe en VIP pour accéder aux pronostics premium.
-        </p>
+    if (plan === "vip") {
+      return match.type !== "VIP_PRO"
+    }
 
-        <button
-          onClick={() => router.push("/offers")}
-          className="bg-yellow-400 text-black font-bold px-6 py-3 rounded-full hover:scale-105 transition"
-        >
-          Voir les offres 👑
-        </button>
-      </main>
-    )
-  }
+    return true
+  })
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-50 px-4 py-6 sm:px-6 md:px-8 text-gray-900">
@@ -97,14 +88,14 @@ export default function VIP() {
         <p className="text-gray-600">Chargement...</p>
       )}
 
-      {!loading && matchsVIP.length === 0 && (
+      {!loading && matchsVisibles.length === 0 && (
         <p className="text-gray-600">
-          Aucun pronostic VIP disponible.
+          Aucun pronostic disponible.
         </p>
       )}
 
       <div className="space-y-5">
-        {matchsVIP.map((match) => (
+        {matchsVisibles.map((match) => (
           <div
             key={match.id}
             className="bg-white p-5 rounded-3xl shadow-md border-2 border-yellow-400 transition-all duration-300 active:scale-[0.98]"
@@ -136,6 +127,19 @@ export default function VIP() {
                 💰 Cote {match.cote}
               </p>
             </div>
+
+            {/* 🔒 Bloc VIP si FREE */}
+            {plan === "free" && match.type === "VIP" && (
+              <p className="text-red-500 text-sm mt-3 font-semibold">
+                🔒 Passe VIP pour voir plus de pronostics
+              </p>
+            )}
+
+            {match.type === "VIP_PRO" && (
+              <p className="text-purple-600 text-sm mt-3 font-semibold">
+                👑 Pronostic VIP PRO
+              </p>
+            )}
           </div>
         ))}
       </div>
