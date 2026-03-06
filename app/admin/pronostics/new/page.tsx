@@ -11,7 +11,7 @@ export default function NewPronostic() {
   const [competition, setCompetition] = useState("")
   const [prediction, setPrediction] = useState("")
   const [cote, setCote] = useState("")
-  const [type, setType] = useState("Gratuit")
+  const [type, setType] = useState("FREE")
   const [date, setDate] = useState("")
   const [heure, setHeure] = useState("")
   const [loading, setLoading] = useState(false)
@@ -59,7 +59,7 @@ export default function NewPronostic() {
     setCompetition("")
     setPrediction("")
     setCote("")
-    setType("Gratuit")
+    setType("FREE")
     setDate("")
     setHeure("")
     setLoading(false)
@@ -69,78 +69,111 @@ export default function NewPronostic() {
 
   return (
     <div className="min-h-screen bg-black text-white flex items-start md:items-center justify-center px-4 py-8">
-      
+
       <div className="w-full max-w-xl bg-gradient-to-br from-gray-900 to-gray-800 
                       p-5 sm:p-8 
                       rounded-xl sm:rounded-2xl 
                       shadow-2xl 
                       border border-gray-700">
 
-        {/* Titre responsive */}
         <h1 className="text-2xl sm:text-3xl font-bold text-yellow-500 mb-6 sm:mb-8 text-center">
           Ajouter Pronostic
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
 
+          {/* MATCH */}
           <input
             type="text"
             placeholder="Match (ex: PSG vs Real Madrid)"
-            className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+            className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
             value={match}
             onChange={(e) => setMatch(e.target.value)}
             required
           />
 
+          {/* COMPETITION */}
           <select
-            className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+            className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
             value={competition}
             onChange={(e) => setCompetition(e.target.value)}
             required
           >
+
             <option value="">Choisir compétition</option>
+
+            {/* Europe */}
             <option>Ligue des Champions</option>
+            <option>Europa League</option>
+            <option>Europa Conference League</option>
+
+            {/* Top Ligues */}
             <option>Premier League</option>
             <option>La Liga</option>
             <option>Serie A</option>
             <option>Bundesliga</option>
             <option>Ligue 1</option>
-            <option>Coupe du Monde</option>
+
+            {/* Autres Europe */}
+            <option>Eredivisie</option>
+            <option>Primeira Liga</option>
+            <option>Super Lig</option>
+            <option>Belgian Pro League</option>
+            <option>Scottish Premiership</option>
+
+            {/* Afrique */}
             <option>CAN</option>
+            <option>CAF Champions League</option>
+            <option>CAF Confederation Cup</option>
+
+            {/* Monde */}
+            <option>Coupe du Monde</option>
+            <option>Coupe du Monde des Clubs</option>
+
+            {/* Amérique */}
+            <option>Copa Libertadores</option>
+            <option>Copa Sudamericana</option>
+            <option>MLS</option>
+
           </select>
 
+          {/* PREDICTION */}
           <input
             type="text"
-            placeholder="Prédiction"
-            className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+            placeholder="Prédiction (ex: +2.5 buts)"
+            className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
             value={prediction}
             onChange={(e) => setPrediction(e.target.value)}
             required
           />
 
+          {/* COTE */}
           <input
             type="number"
             step="0.01"
             placeholder="Cote (ex: 1.85)"
-            className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+            className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
             value={cote}
             onChange={(e) => setCote(e.target.value)}
             required
           />
 
+          {/* TYPE */}
           <select
-            className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+            className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
             value={type}
             onChange={(e) => setType(e.target.value)}
           >
-            <option>Gratuit</option>
-            <option>VIP</option>
+            <option value="FREE">FREE</option>
+            <option value="VIP">VIP</option>
+            <option value="VIP_PRO">VIP PRO</option>
           </select>
 
+          {/* DATE + HEURE */}
           <div className="flex flex-col sm:flex-row gap-4">
             <input
               type="date"
-              className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+              className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
@@ -148,17 +181,18 @@ export default function NewPronostic() {
 
             <input
               type="time"
-              className="w-full p-3 sm:p-4 text-sm sm:text-base rounded-lg sm:rounded-xl bg-gray-800 border border-gray-700 focus:outline-none focus:border-yellow-500 transition"
+              className="w-full p-3 sm:p-4 rounded-xl bg-gray-800 border border-gray-700"
               value={heure}
               onChange={(e) => setHeure(e.target.value)}
               required
             />
           </div>
 
+          {/* BUTTON */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full p-3 sm:p-4 text-sm sm:text-base bg-yellow-500 text-black font-bold rounded-lg sm:rounded-xl hover:bg-yellow-400 transition transform hover:scale-105 disabled:opacity-50"
+            className="w-full p-3 sm:p-4 bg-yellow-500 text-black font-bold rounded-xl hover:bg-yellow-400"
           >
             {loading ? "Publication..." : "Publier"}
           </button>
