@@ -158,18 +158,18 @@ export default function NewPronostic() {
           />
 
           {/* TYPE PRONOSTIC */}
-        <select
-        className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700"
-        value={type}
-        onChange={(e) => setType(e.target.value)}
-        >
+         <select
+            className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            required>
 
-        <option value="GRATUIT">Gratuit</option>
-        <option value="FREE">Free</option>
-        <option value="VIP">VIP</option>
-        <option value="VIP_PRO">VIP PRO</option>
+            <option value="GRATUIT">Gratuit</option>
+            <option value="FREE">Free</option>
+            <option value="VIP">VIP</option>
+            <option value="VIP_PRO">VIP PRO</option>
 
-        </select>
+          </select>
 
           {/* DATE + HEURE */}
           <div className="flex flex-col sm:flex-row gap-4">
