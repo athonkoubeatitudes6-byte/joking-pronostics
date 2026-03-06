@@ -37,12 +37,17 @@ export default function Pronostics() {
   }, [user])
 
   const fetchMatchs = async () => {
-    const { data, error } = await supabase
+     const { data, error } = await supabase
       .from("matches")
       .select("*")
-      .eq("type", "Gratuit")
+      .in("type", ["FREE", "GRATUIT"])
       .eq("status", "En attente")
       .order("date", { ascending: true })
+      
+      
+      
+      
+
 
     if (!error && data) {
       setMatchs(data)
