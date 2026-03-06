@@ -18,31 +18,27 @@ interface Pronostic {
 }
 
 export default function VIP() {
-  const { user, loading: authLoading, plan } = useAuth()
+
+  const { user, loading: authLoading } = useAuth()
   const router = useRouter()
 
   const [matchs, setMatchs] = useState<Pronostic[]>([])
   const [loading, setLoading] = useState(true)
 
-  // 🔐 Redirection si non connecté
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login?redirect=/vip")
-    }
-  }, [user, authLoading, router])
+  const [filter, setFilter] = useState("FREE")
 
-  // 📥 Charger tous les types
   useEffect(() => {
-    if (user) {
-      fetchMatchs()
-    }
-  }, [user])
+    fetchMatchs()
+  }, [filter])
 
   const fetchMatchs = async () => {
+
+    setLoading(true)
+
     const { data, error } = await supabase
       .from("matches")
       .select("*")
-      .in("type", ["FREE", "VIP", "VIP_PRO"])
+      .eq("type", filter)
       .eq("status", "En attente")
       .order("date", { ascending: true })
 
@@ -53,96 +49,107 @@ export default function VIP() {
     setLoading(false)
   }
 
-  // ⏳ Chargement auth
-  if (authLoading) {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-400">Chargement...</p>
-      </main>
-    )
-  }
-
-  // 🔒 Filtrer selon plan
-  const matchsVisibles = matchs.filter((match, index) => {
-    if (plan === "free") {
-      if (match.type === "FREE") return true
-      if (match.type === "VIP" && index < 2) return true
-      return false
-    }
-
-    if (plan === "vip") {
-      return match.type !== "VIP_PRO"
-    }
-
-    return true
-  })
-
   return (
-    <main className="min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-50 px-4 py-6 sm:px-6 md:px-8 text-gray-900">
-      
-      <h1 className="text-2xl sm:text-3xl font-extrabold mb-6">
-        👑 Pronostics VIP 💎
+
+    <main className="min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-50 px-4 py-6 text-gray-900">
+
+      <h1 className="text-2xl font-extrabold mb-6">
+        👑 Pronostics VIP
       </h1>
 
-      {loading && (
-        <p className="text-gray-600">Chargement...</p>
-      )}
+      {/* BOUTONS */}
 
-      {!loading && matchsVisibles.length === 0 && (
-        <p className="text-gray-600">
-          Aucun pronostic disponible.
-        </p>
+      <div className="flex gap-3 mb-6">
+
+        <button
+          onClick={() => setFilter("FREE")}
+          className={`px-4 py-2 rounded-full font-bold ${
+            filter === "FREE"
+              ? "bg-black text-yellow-400"
+              : "bg-white border"
+          }`}
+        >
+          FREE
+        </button>
+
+        <button
+          onClick={() => setFilter("VIP")}
+          className={`px-4 py-2 rounded-full font-bold ${
+            filter === "VIP"
+              ? "bg-black text-yellow-400"
+              : "bg-white border"
+          }`}
+        >
+          VIP
+        </button>
+
+        <button
+          onClick={() => setFilter("VIP_PRO")}
+          className={`px-4 py-2 rounded-full font-bold ${
+            filter === "VIP_PRO"
+              ? "bg-black text-yellow-400"
+              : "bg-white border"
+          }`}
+        >
+          VIP PRO
+        </button>
+
+      </div>
+
+      {loading && <p>Chargement...</p>}
+
+      {!loading && matchs.length === 0 && (
+        <p>Aucun pronostic disponible.</p>
       )}
 
       <div className="space-y-5">
-        {matchsVisibles.map((match) => (
+
+        {matchs.map((match) => (
+
           <div
             key={match.id}
-            className="bg-white p-5 rounded-3xl shadow-md border-2 border-yellow-400 transition-all duration-300 active:scale-[0.98]"
+            className="bg-white p-5 rounded-2xl shadow border border-yellow-300"
           >
-            <div className="flex justify-between items-center mb-3">
-              <span className="bg-black text-yellow-400 text-xs font-bold px-3 py-1 rounded-full">
+
+            <div className="flex justify-between mb-2">
+
+              <span className="text-xs bg-black text-yellow-400 px-2 py-1 rounded">
                 {match.competition}
               </span>
 
-              <span className="text-xs text-gray-600">
-                📅 {match.date}
+              <span className="text-xs">
+                {match.date}
               </span>
+
             </div>
 
-            <h2 className="text-lg sm:text-xl font-bold leading-snug">
+            <h2 className="font-bold text-lg">
               {match.match}
             </h2>
 
-            <p className="text-gray-500 text-sm mt-1">
+            <p className="text-sm text-gray-500">
               🕒 {match.heure}
             </p>
 
-            <div className="mt-4 p-3 bg-yellow-50 rounded-xl border border-yellow-200">
-              <p className="text-blue-600 font-semibold text-sm">
+            <div className="mt-3 bg-yellow-50 p-3 rounded">
+
+              <p className="text-blue-600 font-semibold">
                 🎯 {match.prediction}
               </p>
 
-              <p className="text-green-600 font-bold mt-1 text-sm">
+              <p className="text-green-600 font-bold">
                 💰 Cote {match.cote}
               </p>
+
             </div>
 
-            {/* 🔒 Bloc VIP si FREE */}
-            {plan === "free" && match.type === "VIP" && (
-              <p className="text-red-500 text-sm mt-3 font-semibold">
-                🔒 Passe VIP pour voir plus de pronostics
-              </p>
-            )}
-
-            {match.type === "VIP_PRO" && (
-              <p className="text-purple-600 text-sm mt-3 font-semibold">
-                👑 Pronostic VIP PRO
-              </p>
-            )}
           </div>
+
         ))}
+
       </div>
+
     </main>
+
   )
 }
